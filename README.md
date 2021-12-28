@@ -48,9 +48,10 @@ With how floats and doubles work, they store an exponent with them. This is just
 So, if we take this number and divide it by two, we have the number of excess digits the square has. In order to cut    
 them off, we just need to divide by 2^(excess digits).    
     
-That was a lot of work! Thankfully, the rest is pretty simple. We just need to store our guess and run Newton's method    
-a few times, then we'll have our guess!    
+That was a lot of work! Thankfully, the rest is pretty simple. We just need to store our guess and run    
+Newton's method a few times, then we'll have our guess!    
     
 This isn't perfect, when we try very large numbers even the small difference between our guess and the actual root is    
-too much, and our guess is innacurate. Thank god this is only meant to be a simple optimized algorithm, otherwise I'd    
-have to deal with that! Kind of reminds me of my terrible error handling in most of my other programs.
+too much, and our guess is innacurate. Thank god this is only meant to be a simple optimized algorithm,    
+otherwise I'd have to deal with that! Kind of reminds me of my terrible error handling in most of my    
+other programs.
