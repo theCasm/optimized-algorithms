@@ -32,3 +32,25 @@ With my two functions in hand, I copied my code from the linear algorithm, but r
 function (depending on it's value) instead of just subracting one. Then I could just return the result plus
 it's    
 exponent. Easy, right? No? It's confusing and terribly explained? Hey, I tried my best.
+
+# Square Root
+Newton's Method is a well known way to calculate square roots. So we just need to use that, right? Well, not exactly.    
+Newton's Method needs a guess for square root, which it will nudge closer and closer to the actual root. If we just use    
+the number as it's guess, it will take ages to lower it enough that we can start getting an accurate answer.    
+    
+How can we fix this? Well, if we look at a number in binary, we can see that a square root will have around half as    
+many bits as it's square. Why is this? When you multiply two numbers, the product will have about as many digits as    
+the sum of the numbers digits. As we can see from doing multiplication by hand, this is because we need to multiply    
+every digit with every other digit. So, a square will just have the square roots digits twice. Can we abuse this to    
+Get a good guess?    
+    
+With how floats and doubles work, they store an exponent with them. This is just how many (binary) digits they have!    
+So, if we take this number and divide it by two, we have the number of excess digits the square has. In order to cut    
+them off, we just need to divide by 2^(excess digits).    
+    
+That was a lot of work! Thankfully, the rest is pretty simple. We just need to store our guess and run Newton's method    
+a few times, then we'll have our guess!    
+    
+This isn't perfect, when we try very large numbers even the small difference between our guess and the actual root is    
+too much, and our guess is innacurate. Thank god this is only meant to be a simple optimized algorithm, otherwise I'd    
+have to deal with that! Kind of reminds me of my terrible error handling in most of my other programs.
