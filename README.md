@@ -37,21 +37,35 @@ exponent. Easy, right? No? It's confusing and terribly explained? Hey, I tried m
 Newton's Method is a well known way to calculate square roots. So we just need to use that, right? Well, not exactly.    
 Newton's Method needs a guess for square root, which it will nudge closer and closer to the actual root. If we just use    
 the number as it's guess, it will take ages to lower it enough that we can start getting an accurate answer.    
+   
+Newtons method has qaudratic convergence - that is, if our initial guess is
+withing E of the actual answer, the new output will be within E^2. If our
+error is above 1, this doesn't mean much. But if we get below one, we are
+at least doubling the digits of accuracy every iteration.
     
-How can we fix this? Well, if we look at a number in binary, we can see that a square root will have around half as    
-many bits as it's square. Why is this? When you multiply two numbers, the product will have about as many digits as    
-the sum of the numbers digits. As we can see from doing multiplication by hand, this is because we need to multiply    
-every digit with every other digit. So, a square will just have the square roots digits twice. Can we abuse this to    
-Get a good guess?    
+First, lets understand the structure of a floating point number. The actual way
+these numbers are stored doesn't matter, if I was smart I would have coded it
+using a union and bit field. What does matter, is that floating point numbers
+are stored in base 2 scientific notation. If we wanted to store a big
+integer like 1234 in scientific notation, wed write 1.234 x 10^3. If there
+were decimals, we might write 12.34 = 1.234 x 10^1. The only difference in
+floating point is that we multiply by 2, and write the digits in base 2.
+The first digit is always a 1, so we can cheat a little and just store
+everything after.
     
-With how floats and doubles work, they store an exponent with them. This is just how many (binary) digits they have!    
-So, if we take this number and divide it by two, we have the number of excess digits the square has. In order to cut    
-them off, we just need to divide by 2^(excess digits).    
+So, we want sqrt(1.stuff x 2^e). This is just sqrt(1.stuff) x 2^(e/2), and
+1.stuff is guaranteed to be between 1 and 2, so 1.5 as a first guess is
+already close. The only problem is that e might be odd.
     
-That was a lot of work! Thankfully, the rest is pretty simple. We just need to store our guess and run    
-Newton's method a few times, then we'll have our guess!    
+Initially, this might seem easy. E = 2k+1 so
+sqrt(1.stuff x 2^(2k+1)) = sqrt(1.stuff) x 2^k x sqrt(2) and we can just
+store the value of sqrt(2). Unfortunately, multiplying by sqrt(2) can lose a lot
+of accuracy, so this isn't really worth it.
     
-This isn't perfect, when we try very large numbers even the small difference between our guess and the actual root is    
-too much, and our guess is innacurate. Thank god this is only meant to be a simple optimized algorithm,    
-otherwise I'd have to deal with that! Kind of reminds me of my terrible error handling in most of my    
-other programs.
+Instead, we do something dumb and possibly not worth it. We write
+1.stuff x 2^(2k+1) = 2(1.stuff) x 2^2k and do the same thing we do with
+even numbers. The 2(1.stuff) is between 2 and 4, so in the worst case the
+guess 3 is 1 off, but this is good enough.
+    
+That was a lot of work! Thankfully, the rest is pretty simple. We just need to
+run Newton's method a few times, then we'll have our guess!    
