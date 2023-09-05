@@ -54,8 +54,9 @@ The first digit is always a 1, so we can cheat a little and just store
 everything after.
     
 So, we want sqrt(1.stuff x 2^e). This is just sqrt(1.stuff) x 2^(e/2), and
-1.stuff is guaranteed to be between 1 and 2, so 1.5 as a first guess is
-already close. The only problem is that e might be odd.
+1.stuff is guaranteed to be between 1 and 2, so sqrt(1.stuff) is in (1, 1.414..)
+and (1+sqrt(2))/2 as a first guess is already very close. The only problem is
+that e might be odd.
     
 Initially, this might seem easy. E = 2k+1 so
 sqrt(1.stuff x 2^(2k+1)) = sqrt(1.stuff) x 2^k x sqrt(2) and we can just
@@ -64,8 +65,9 @@ of accuracy, so this isn't really worth it.
     
 Instead, we do something dumb and possibly not worth it. We write
 1.stuff x 2^(2k+1) = 2(1.stuff) x 2^2k and do the same thing we do with
-even numbers. The 2(1.stuff) is between 2 and 4, so in the worst case the
-guess 3 is 1 off, but this is good enough.
+even numbers. The 2(1.stuff) is between 2 and 4, so sqrt() is in (sqrt(2), 2)
+and in the worst case the guess 1 + sqrt(2)/2 is ~.3 off, but this is good
+enough.
     
 That was a lot of work! Thankfully, the rest is pretty simple. We just need to
 run Newton's method a few times, then we'll have our guess!    

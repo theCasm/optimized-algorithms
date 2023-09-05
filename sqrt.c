@@ -3,7 +3,10 @@
 #include <string.h>
 #include <stdint.h>
 
-#define sqrt(n) ksqrt(n, 5)
+#define sqrt(n) ksqrt(n, 4)
+#define GUESS1 (1.2071067811865475244);
+#define GUESS2 (1.7071067811865475244);
+
 
 // hell hell hell hell trick c into letting me treat n as bits
 // god I shouldve used bit fields this sucks
@@ -32,7 +35,7 @@ double ksqrt(double n, int k)
 {
 	uint64_t temp;
 	int magicalFlag = 0;
-	double est = 1.5;
+	double est = GUESS1;
 	unsigned int newExp;
 
 	if (n == 0) return 0;
@@ -41,7 +44,7 @@ double ksqrt(double n, int k)
 	if ((exp & 1) == 0) {
 		exp--;
 		magicalFlag = 1;
-		est = 3;
+		est = GUESS2;
 	}
 	newExp = (exp - 0x3ff) / 2 + 0x3ff;
 
