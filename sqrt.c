@@ -4,15 +4,19 @@
 #include <stdint.h>
 
 #define sqrt(n) ksqrt(n, 4)
-#define GUESS1 (1.2071067811865475244);
-#define GUESS2 (1.7071067811865475244);
-
-
-// hell hell hell hell trick c into letting me treat n as bits
-// god I shouldve used bit fields this sucks
-#define BITS(n) (*((uint64_t*)&n))
+#define GUESS1 (1.2071067811865475244)
+#define GUESS2 (1.7071067811865475244)
 
 double ksqrt(double n, int k);
+
+union DBits {
+	double val;
+	struct {
+		uint64_t mantissa : 52;
+		unsigned int exponent : 11;
+		unsigned int sign : 1;
+	};
+};
 
 int main(int argc, char *argv[])
 {
@@ -33,37 +37,35 @@ int main(int argc, char *argv[])
 
 double ksqrt(double n, int k)
 {
-	uint64_t temp;
+	union DBits num, est;
 	int magicalFlag = 0;
-	double est = GUESS1;
 	unsigned int newExp;
 
 	if (n == 0) return 0;
-
-	int exp = ((BITS(n) >> 52) & 0x7ff);
-	if ((exp & 1) == 0) {
-		exp--;
+	num.val = n;
+	est.val = GUESS1;
+	
+	if ((num.exponent & 1) == 0) {
+		// will be odd after subtracting 1023
+		num.exponent--;
 		magicalFlag = 1;
-		est = GUESS2;
+		est.val = GUESS2;
 	}
-	newExp = (exp - 0x3ff) / 2 + 0x3ff;
+	newExp = (num.exponent - 0x3ff) / 2 + 0x3ff;
 
 	// set exponent to 0
-	temp = (BITS(n) & 0x800fffffffffffff) | ((uint64_t)0x3ff << 52);
-	memcpy(&n, &temp, 8);
+	num.exponent = 0x3ff;
 	
 	// has to be after to not be put back into exponent
 	if (magicalFlag) {
-		n *= 2;
+		num.val *= 2;
 	}
 
-	// funny -- thing
 	while (k --> 0) {
-		est = (est + (n / est)) / 2;
+		est.val = (est.val + (num.val / est.val)) / 2;
 	}
 
 	// re-add exponent
-	temp = (BITS(est) & 0x800fffffffffffff) | ((uint64_t)(newExp) << 52);
-	memcpy(&est, &temp, 8);
-	return est;
+	est.exponent = newExp;
+	return est.val;
 }
